@@ -1,0 +1,56 @@
+@import url(http://fonts.googleapis.com/css?family=Arimo);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+@import url(http://fonts.googleapis.com/css?family=Ubuntu);
+/*.button {margin:0;padding:0;border:0 none;position: relative; outline: none;}*/
+
+.navbarContainer {
+  background: #51505E;
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+}
+
+.title {
+  display:flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0 none;
+}
+
+.button {
+  text-decoration: none;
+  color: #00B4C7;
+  font: 16px Arimo;
+  margin-left: 10;
+  z-index: 1;
+  position: relative;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  border: 0 none;
+  position: relative;
+  outline: none;
+}
+
+.button:before {
+  content: "";
+  position: absolute;
+  width: 70%;
+  height: 2px;
+  bottom: -2px;
+  left: 15%;
+  background: #00B4C7;
+  visibility: hidden;
+  border-radius: 0px;
+  transform: scaleX(0);
+  transition: .4s linear;
+}
+.button:hover:before,
+.button:focus:before {
+  visibility: visible;
+  transform: scaleX(1);
+}
