@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import imgBlur from '../../img/schoolBlur.jpeg';
+import imgBlur from '../../img/schoolBlur.png';
 import PropTypes from 'prop-types';
 import { Form, FormGroup, Col, ControlLabel, FormControl, Image, Button } from 'react-bootstrap';
 import Logo from '../../img/logoChico.png';

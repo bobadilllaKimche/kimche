@@ -90,7 +90,7 @@ export default class Main extends Component {
         <h2>Lista de Anuncios</h2>
         <hr />
         {this.renderLista()}
-        <a href='http://recharts.org'>Ejemplo de Graficos</a>
+        <a href="http://recharts.org">Ejemplo de Graficos</a>
       </Col>
     );
   }

@@ -5,8 +5,6 @@ import LandingPage from './components/landingPage';
 import Login from './components/login';
 import Main from './components/main';
 
-// TODO: Agregaar a github
-// TODO: Crear Firebase
 // TODO: Crear Firebase user login
 // TODO: Crear Usuarios - tipos (Director, Profe, Admin)
 // TODO: Crear vista Admin

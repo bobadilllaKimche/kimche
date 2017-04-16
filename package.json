@@ -2,6 +2,7 @@
   "name": "kimche",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://kimche-cf3a2.firebaseapp.com/",
   "devDependencies": {
     "babel-core": "^6.7.7",
     "babel-eslint": "^6.0.4",
