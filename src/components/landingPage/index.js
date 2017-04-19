@@ -14,20 +14,13 @@ export default class LandingPage extends Component {
     super(props);
     this.state = {
       navbarButton: false,
-      width: window.innerWidth,
-      height: window.innerHeight,
     };
   }
 
   componentDidMount() {
-    window.addEventListener('resize', () => this.handleResize());
-  }
-  handleResize() {
-    this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
-  renderMain() {
-    const { height, width } = this.state;
+  renderMain(height, width) {
     const firstContainer = {
       backgroundImage: `url(${landingImage})`,
       minHeight: height,
@@ -38,10 +31,11 @@ export default class LandingPage extends Component {
       alignItems: 'center',
       display: 'flex',
     };
+
     return (
       <div style={firstContainer}>
         <Col xs={10} md={4} mdOffset={3} style={{ color: 'white', alignItems: 'center' }}>
-          <Image src={Logo} />
+          <Image src={Logo} responsive />
           <br />
           <br />
           <h1>Big-Data en Educación</h1>
@@ -143,10 +137,10 @@ export default class LandingPage extends Component {
   }
 
   render() {
-    const { height } = this.state;
+    const { height, width } = this.props;
     return (
       <div>
-        <Element name="Home">{this.renderMain()}</Element>
+        <Element name="Home">{this.renderMain(height, width)}</Element>
         <Element name="Caracteristicas">{this.renderFuncionalidades(height)}</Element>
         <Element name="Contacto">{this.renderContact(height)}</Element>
       </div>
@@ -155,6 +149,6 @@ export default class LandingPage extends Component {
 }
 
 LandingPage.propTypes = {
-  height: PropTypes.int,
-  width: PropTypes.int,
+  height: PropTypes.number,
+  width: PropTypes.number,
 };

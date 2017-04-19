@@ -5,7 +5,6 @@ import LandingPage from './components/landingPage';
 import Login from './components/login';
 import Main from './components/main';
 
-// TODO: Crear Firebase user login
 // TODO: Crear Usuarios - tipos (Director, Profe, Admin)
 // TODO: Crear vista Admin
 // TODO: validar login Firebase
@@ -31,11 +30,9 @@ export default class App extends React.Component {
         <div>
           <NavBar history={history} location={location} width={this.state.width} />
           <div style={{ paddingTop: 40 }}>
-            <Route exact path="/" component={LandingPage} />
-            <Route path="/login" component={Login} />
-            <Route path="/main" component={Main} />
-            {/* <Route path="/public" component={Public} />
-            <PrivateRoute path="/protected" component={Protected} /> */}
+            <Route exact path="/" render={props => <LandingPage {...this.state} {...props} />} />
+            <Route path="/login" render={props => <Login {...this.state} {...props} />} />
+            <Route path="/main" render={props => <Main {...this.state} {...props} />} />
           </div>
         </div>
       </Router>

@@ -4,27 +4,46 @@ import PropTypes from 'prop-types';
 import { Form, FormGroup, Col, ControlLabel, FormControl, Image, Button } from 'react-bootstrap';
 import Logo from '../../img/logoChico.png';
 import { Link } from 'react-router-dom';
+import Firebase from 'firebase';
 
 export default class Login extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      width: window.innerWidth,
-      height: window.innerHeight,
     };
   }
 
-  componentDidMount() {
-    window.addEventListener('resize', () => this.handleResize());
-  }
+  login(e) {
+    e.preventDefault();
+    this.setState({ loading: true });
+    const { email, password } = this.state;
+    Firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
+      // this.props.router.push(`/main/${user.uid}`);
 
-  handleResize() {
-    this.setState({ width: window.innerWidth, height: window.innerHeight });
+      // let validador = '';
+      // let data = [];
+      // lista.forEach(element => {
+      //   console.log(element);
+      //   if (element.ID !== validador) {
+      //     Firebase.database().ref(`/protocolos/${validador}`).set(data);
+      //     console.log(data);
+      //     data = [];
+      //     validador = element.ID;
+      //   }
+      //   data.push({ nombre: element.Atributo, tipo: element.Tipo, clase: element.Clase });
+      // });
+      const data = [];
+      // lista.forEach(element => data.push({ nombre: element.Atributo, tipo: element.Tipo, clase: element.Clase }));
+      Firebase.database().ref('/protocolos/5-1-1').update(data);
+    }, error =>
+      this.setState({ error, loading: false })
+    );
+    // this.setState({ loading: false });
   }
 
   render() {
-    const { height } = this.state;
+    const { height } = this.props;
     const firstContainer = {
       backgroundImage: `url(${imgBlur})`,
       minHeight: height - 40,
@@ -33,18 +52,16 @@ export default class Login extends Component {
       backgroundPosition: '50% 50%',
       alignItems: 'center',
       display: 'flex',
-      // filter: 'grayscale(70%) blur(4px)',
-      // zIndex: -1,
     };
     return (
       <div style={firstContainer} >
         <Col md={8} mdOffset={2} xs={10} xsOffset={1}>
-          <Form horizontal style={{ backgroundColor: 'rgba(81,80,94,0.7)', padding: 20, borderRadius: 20 }}>
+          <Form horizontal style={{ backgroundColor: 'rgba(81,80,94,0.7)', padding: '5%', borderRadius: 20 }}>
             <center>
-              <Image src={Logo} responsive style={{ padding: 40 }} />
+              <Image src={Logo} responsive style={{ padding: '3%' }} />
             </center>
             <FormGroup controlId="formHorizontalEmail">
-              <Col componentClass={ControlLabel} sm={2} style={{ color: 'white' }}>
+              <Col componentClass={ControlLabel} sm={2} style={{ color: 'white' }} value={this.state.email} onChange={email => this.setState({ email: email.target.value })} >
                 Email
               </Col>
               <Col sm={9}>
@@ -57,7 +74,7 @@ export default class Login extends Component {
                 Contraseña
               </Col>
               <Col sm={9}>
-                <FormControl type="password" placeholder="Contraseña" />
+                <FormControl type="password" placeholder="Contraseña" value={this.state.password} onChange={password => this.setState({ password: password.target.value })} />
               </Col>
             </FormGroup>
 
