@@ -38,7 +38,7 @@ export default class LandingPage extends Component {
           <Image src={Logo} responsive />
           <br />
           <br />
-          <h1>Big-Data en Educación</h1>
+          <h1 style={{ color: 'black' }}>Big-Data en Educación</h1>
           <br />
           <p>Plataforma colaborativa de Big-Data & Recomendaciones. Desarrollada para reducir los ciclos de feedback de información crítica de las escuelas.</p>
         </Col>
@@ -56,7 +56,7 @@ export default class LandingPage extends Component {
           <Col md={4}>
             <div>
               <hr />
-              <h4>
+              <h4 style={{ color: 'white' }}>
                 <FaCubes size={30} style={{ marginRight: 10 }} />
                 BIG DATA
               </h4>
@@ -72,7 +72,7 @@ export default class LandingPage extends Component {
           <Col md={4}>
             <div>
               <hr />
-              <h4>
+              <h4 style={{ color: 'white' }}>
                 <FaCommentsO size={30} style={{ marginRight: 10 }} />
                 COLABORACIÓN
               </h4>
@@ -86,7 +86,7 @@ export default class LandingPage extends Component {
           <Col md={4}>
             <div>
               <hr />
-              <h4>
+              <h4 style={{ color: 'white' }}>
                 <FaStreetView size={30} style={{ marginRight: 10 }} />
                 RECOMENDACIONES
               </h4>
@@ -106,7 +106,7 @@ export default class LandingPage extends Component {
     return (
       <Grid fluid style={{ backgroundColor: 'rgb(94, 102, 130)', paddingTop: '10%', paddingBottom: '10%' }}>
         <Col style={{ color: 'white', textAlign: 'center' }} xs={12} mdOffset={2} md={8}>
-          <h3>|CONTÁCTANOS|</h3>
+          <h3 style={{ color: 'white' }}>|CONTÁCTANOS|</h3>
           <hr />
           <h3>Recibe una Asesoria Gratis</h3>
           <p>En Kimche estamos comprometidos con la educación y ofrecemos una asesoría gratis para mostrar como puede optimizar la gestión de su establecimiento.</p>
