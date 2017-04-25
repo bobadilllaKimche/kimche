@@ -122,14 +122,6 @@ export default class Director extends Component {
                   <br />
                   <br />
                   <Well>
-                    <FormGroup controlId="formControlsTextarea">
-                      <ControlLabel>Comentarios</ControlLabel>
-                      <FormControl componentClass="textarea" placeholder="Escribe aqui..." />
-                      <br />
-                      <Button>
-                        Enviar
-                      </Button>
-                    </FormGroup>
                     <BarChart width={width * 0.45} height={height * 0.35} data={data}>
                       <XAxis dataKey="name" />
                       {/* <YAxis domain={domain} ticks={ticks} tickCount={10} /> */}
@@ -138,6 +130,22 @@ export default class Director extends Component {
                       <Legend />
                       <Bar dataKey="Asistencia" fill="#8884d8" label />
                     </BarChart>
+                    <FormGroup controlId="formControlsTextarea">
+                      <ControlLabel>¿Por qué paso?</ControlLabel>
+                      <FormControl componentClass="textarea" placeholder="Escribe aqui..." />
+                      <br />
+                      <Button>
+                        Enviar
+                      </Button>
+                    </FormGroup>
+                    <FormGroup controlId="formControlsTextarea">
+                      <ControlLabel>¿Qué acción tomaste?</ControlLabel>
+                      <FormControl componentClass="textarea" placeholder="Escribe aqui..." />
+                      <br />
+                      <Button>
+                        Enviar
+                      </Button>
+                    </FormGroup>
                   </Well>
                 </div>
               </Collapse>

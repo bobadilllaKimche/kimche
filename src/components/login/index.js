@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import imgBlur from '../../img/schoolBlur.png';
 import PropTypes from 'prop-types';
-import { Form, FormGroup, Col, ControlLabel, FormControl, Image, Button, Alert } from 'react-bootstrap';
+import { Form, FormGroup, Col, ControlLabel, FormControl, Image, Button, Alert, InputGroup, Glyphicon } from 'react-bootstrap';
 import Logo from '../../img/logoChico.png';
 // import { Link } from 'react-router-dom';
 import firebase from 'firebase';
@@ -58,40 +58,25 @@ export default class Login extends Component {
     };
     return (
       <div style={firstContainer} >
-        <Col md={8} mdOffset={2} xs={10} xsOffset={1} style={{ backgroundColor: 'rgba(81,80,94,0.7)', padding: '5%', borderRadius: 20 }}>
+        <Col sm={6} mdOffset={3} xs={10} xsOffset={1} style={{ backgroundColor: 'rgba(81,80,94,0.7)', padding: '5%', borderRadius: 20 }}>
           <Form onSubmit={a => this.login(a)} horizontal>
             <center>
               <Image src={Logo} responsive style={{ padding: '3%' }} />
             </center>
             <FormGroup controlId="formHorizontalEmail">
-              <Col componentClass={ControlLabel} sm={2} style={{ color: 'white' }} >
-                Email
-              </Col>
-              <Col sm={9}>
+              <InputGroup style={{ paddingBottom: 10 }}>
+                <InputGroup.Addon><Glyphicon glyph="user" /></InputGroup.Addon>
                 <FormControl type="email" placeholder="Email" value={this.state.email} onChange={email => this.setState({ email: email.target.value })} />
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalPassword">
-              <Col componentClass={ControlLabel} sm={2} style={{ color: 'white' }}>
-                Contraseña
-              </Col>
-              <Col sm={9}>
+              </InputGroup>
+              <InputGroup style={{ paddingBottom: 10 }}>
+                <InputGroup.Addon><Glyphicon glyph="lock" /></InputGroup.Addon>
                 <FormControl type="password" placeholder="Contraseña" value={this.state.password} onChange={password => this.setState({ password: password.target.value })} />
-              </Col>
+              </InputGroup>
+              <Button type="submit" bsStyle="success" disabled={loading} block>
+                {loading ? 'Ingresando' : 'Ingresar'}
+              </Button>
             </FormGroup>
-
-
-            <FormGroup>
-              <Col smOffset={2} sm={10}>
-                {/* <Link to="main" > */}
-                <Button type="submit" bsStyle="success" disabled={loading}>
-                  {loading ? 'Ingresando' : 'Ingresar'}
-                </Button>
-                {/* </Link> */}
-              </Col>
-            </FormGroup>
-            <Col xs={12} mdOffset={1} md={10}>
+            <Col xs={12} smOffset={1} sm={10}>
               {error.message && this.renderError(error)}
             </Col>
           </Form>

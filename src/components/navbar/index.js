@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { withRouter, Redirect, Link } from 'react-router-dom';
 import { Col, Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import Logo from '../../img/logoChico.png';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
 
-export default class NavBar extends Component {
+class NavBar extends Component {
 
   constructor(props) {
     super(props);
@@ -20,27 +21,17 @@ export default class NavBar extends Component {
     };
   }
 
-  sesionOptions(user, location) {
-    if (location.pathname === '/') {
-      if (user) return ('/main');
-      else return ('/login');
-    }
-    if (location.pathname === '/main') return ('/main/user');
-    else return (location.pathname);
-  }
-
   logOut() {
     firebase.auth().signOut().then(() => this.setState({ logout: true }));
   }
 
-  renderLanding(user, location) {
+  renderLanding() {
+    const { user } = this.props;
     return (
       <Nav pullRight>
-        <NavItem>
-          <Link to={this.sesionOptions(user, location)} >
-            Mi Sesion
-          </Link>
-        </NavItem>
+        <LinkContainer to={user ? '/main' : '/login'}>
+          <NavItem>Mi Sesion</NavItem>
+        </LinkContainer>
       </Nav>
     );
   }
@@ -48,22 +39,15 @@ export default class NavBar extends Component {
   renderMain() {
     return (
       <Nav pullRight>
-        <NavItem>
-          <Link to="/main" >
-            Estadisticas
-          </Link>
-        </NavItem>
-        <NavItem>
-          <Link to="/main" >
-          Anuncios
-          </Link>
-        </NavItem>
+        <MenuItem >Mensajes</MenuItem>
         <NavDropdown title="Mi Usuario" id="basic-nav-dropdown">
           <MenuItem>
             Mi Sesión
           </MenuItem>
           <MenuItem divider />
-          <MenuItem onClick={() => this.logOut()}>Cerrar Sesión</MenuItem>
+          <LinkContainer to="/login">
+            <MenuItem onClick={() => this.logOut()}>Cerrar Sesión</MenuItem>
+          </LinkContainer>
         </NavDropdown>
       </Nav>
     );
@@ -97,54 +81,36 @@ export default class NavBar extends Component {
   }
 
   render() {
-    const { user } = this.props;
-    if (this.state.logout) {
-      this.setState({ logout: false });
-      return <Redirect to="/" />;
-    } else if (this.state.viewUser) {
-      this.setState({ viewUser: false });
-      return <Redirect to="/admin/viewUser" />;
-    } else if (this.state.createUser) {
-      this.setState({ createUser: false });
-      return <Redirect to="/admin/createUser" />;
-    } else if (this.state.viewColegio) {
-      this.setState({ viewColegio: false });
-      return <Redirect to="/admin/viewColegio" />;
-    } else if (this.state.createColegio) {
-      this.setState({ createColegio: false });
-      return <Redirect to="/admin/createColegio" />;
-    } else if (this.state.viewAvisos) {
-      this.setState({ viewAvisos: false });
-      return <Redirect to="/admin/viewAvisos" />;
-    } else if (this.state.createAvisos) {
-      this.setState({ createAvisos: false });
-      return <Redirect to="/admin/createAvisos" />;
-    } else {
-      return (
-        <Navbar fixedTop fluid>
-          <Col xs={12} md={10} mdOffset={1}>
-            <Navbar.Header style={{ alignItems: 'center' }}>
-              <Link to="/" >
-                <img src={Logo} alt={'Logo'} height={36} style={{ marginTop: 2 }} />
-              </Link>
-              <Navbar.Toggle />
-            </Navbar.Header>
-            <Navbar.Collapse>
-              {location.pathname === '/' && this.renderLanding(user, location)}
-              {location.pathname.includes('/main') && this.renderMain(user, location)}
-              {location.pathname.includes('/admin') && this.renderAdmin(user, location)}
-            </Navbar.Collapse>
-          </Col>
-        </Navbar>
-    ); }
+    return (
+      <Navbar fixedTop fluid>
+        <Col xs={12} md={10} mdOffset={1}>
+          <Navbar.Header style={{ alignItems: 'center' }}>
+            <Link to="/" >
+              <img src={Logo} alt={'Logo'} height={36} style={{ marginTop: 2 }} />
+            </Link>
+            <Navbar.Toggle />
+          </Navbar.Header>
+          <Navbar.Collapse>
+            {location.pathname === '/' && this.renderLanding()}
+            {location.pathname.includes('/main') && this.renderMain()}
+            {location.pathname.includes('/admin') && this.renderAdmin()}
+          </Navbar.Collapse>
+        </Col>
+      </Navbar>
+    );
   }
 }
 
 NavBar.propTypes = {
   location: PropTypes.object,
-  history: PropTypes.object,
   user: PropTypes.object,
+  history: PropTypes.shape({
+    push: React.PropTypes.func.isRequired,
+  }).isRequired,
 };
+
+export default withRouter(NavBar);
+
 
 // renderPc() {
 //   const { location } = this.props;

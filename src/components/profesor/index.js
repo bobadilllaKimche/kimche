@@ -105,14 +105,6 @@ export default class Profesor extends Component {
                   <br />
                   <br />
                   <Well>
-                    <FormGroup controlId="formControlsTextarea">
-                      <ControlLabel>Comentarios</ControlLabel>
-                      <FormControl componentClass="textarea" placeholder="Escribe aqui..." />
-                      <br />
-                      <Button>
-                        Enviar
-                      </Button>
-                    </FormGroup>
                     <BarChart width={width * 0.45} height={height * 0.35} data={data}>
                       <XAxis dataKey="name" />
                       {/* <YAxis domain={domain} ticks={ticks} tickCount={10} /> */}
@@ -121,6 +113,22 @@ export default class Profesor extends Component {
                       <Legend />
                       <Bar dataKey="Asistencia" fill="#8884d8" label />
                     </BarChart>
+                    <FormGroup controlId="formControlsTextarea">
+                      <ControlLabel>¿Por qué paso?</ControlLabel>
+                      <FormControl componentClass="textarea" placeholder="Escribe aqui..." />
+                      <br />
+                      <Button>
+                        Enviar
+                      </Button>
+                    </FormGroup>
+                    <FormGroup controlId="formControlsTextarea">
+                      <ControlLabel>¿Qué acción tomaste?</ControlLabel>
+                      <FormControl componentClass="textarea" placeholder="Escribe aqui..." />
+                      <br />
+                      <Button>
+                        Enviar
+                      </Button>
+                    </FormGroup>
                   </Well>
                 </div>
               </Collapse>
@@ -136,14 +144,12 @@ export default class Profesor extends Component {
     return (
       teacher ?
         <Col style={{ paddingTop: '5%', paddingBottom: '5%' }}>
-          <h2>Lista de Anuncios - {teacher}</h2>
+          <h2>Mensajes - {teacher}</h2>
           <hr />
           {this.renderLista()}
         </Col>
         :
         <Col xs={12} md={8} mdOffset={2} style={{ paddingTop: '5%', paddingBottom: '5%' }}>
-          {/* <h2>Lista de Anuncios</h2> */}
-          <hr />
           {this.renderLista()}
         </Col>
     );
