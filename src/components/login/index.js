@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import imgBlur from '../../img/schoolBlur.png';
 import PropTypes from 'prop-types';
-import { Form, FormGroup, Col, ControlLabel, FormControl, Image, Button, Alert, InputGroup, Glyphicon } from 'react-bootstrap';
-import Logo from '../../img/logoChico.png';
-// import { Link } from 'react-router-dom';
+import { Form, FormGroup, Col, FormControl, Image, Button, Alert, InputGroup, Glyphicon } from 'react-bootstrap';
 import firebase from 'firebase';
+
+import Logo from '../../img/logoChico.png';
+import imgBlur from '../../img/schoolBlur.png';
 
 export default class Login extends Component {
 
@@ -28,7 +28,7 @@ export default class Login extends Component {
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then(user => {
           this.setState({ user, loading: false });
-          this.props.history.push('/main');
+          this.props.history.push('/admin');
         })
         .catch(error => this.setState({ error, loading: false }));
     }
@@ -47,9 +47,11 @@ export default class Login extends Component {
   render() {
     const { height } = this.props;
     const { loading, error } = this.state;
+    console.log(this.state.user);
     const firstContainer = {
       backgroundImage: `url(${imgBlur})`,
       minHeight: height - 40,
+      backgroundSize: '100% 100%',
       backgroundPositionX: '50%',
       backgroundPositionY: '50%',
       backgroundPosition: '50% 50%',
@@ -76,7 +78,7 @@ export default class Login extends Component {
                 {loading ? 'Ingresando' : 'Ingresar'}
               </Button>
             </FormGroup>
-            <Col xs={12} smOffset={1} sm={10}>
+            <Col xs={12}>
               {error.message && this.renderError(error)}
             </Col>
           </Form>

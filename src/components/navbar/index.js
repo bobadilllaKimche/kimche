@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter, Redirect, Link } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Col, Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Logo from '../../img/logoChico.png';
@@ -11,13 +11,6 @@ class NavBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      logout: false,
-      viewUser: false,
-      createUser: false,
-      viewColegio: false,
-      createColegio: false,
-      viewAvisos: false,
-      createAvisos: false,
     };
   }
 
@@ -29,7 +22,7 @@ class NavBar extends Component {
     const { user } = this.props;
     return (
       <Nav pullRight>
-        <LinkContainer to={user ? '/main' : '/login'}>
+        <LinkContainer to={user ? '/admin' : '/login'}>
           <NavItem>Mi Sesion</NavItem>
         </LinkContainer>
       </Nav>
@@ -55,28 +48,39 @@ class NavBar extends Component {
 
   renderAdmin() {
     return (
-      <Nav pullRight>
-        <NavDropdown title="Usuarios" id="basic-nav-dropdown">
-          <MenuItem onClick={() => this.setState({ viewUser: true })}>Ver Usuarios</MenuItem>
-          <MenuItem divider />
-          <MenuItem onClick={() => this.setState({ createUser: true })}>Crear Usuarios</MenuItem>
-        </NavDropdown>
-        <NavDropdown title="Colegios" id="basic-nav-dropdown">
-          <MenuItem onClick={() => this.setState({ viewColegio: true })}>Ver Colegios</MenuItem>
-          <MenuItem divider />
-          <MenuItem onClick={() => this.setState({ createColegio: true })}>Crear Colegio</MenuItem>
-        </NavDropdown>
-        <NavDropdown title="Avisos" id="basic-nav-dropdown">
-          <MenuItem onClick={() => this.setState({ viewAvisos: true })}>Ver avisos</MenuItem>
-          <MenuItem divider />
-          <MenuItem onClick={() => this.setState({ createAvisos: true })}>Crear Avisos</MenuItem>
-        </NavDropdown>
-        <NavDropdown title="Mi Usuario" id="basic-nav-dropdown">
-          <MenuItem>Mi Sesión</MenuItem>
-          <MenuItem divider />
-          <MenuItem onClick={() => this.logOut()}>Cerrar Sesión</MenuItem>
-        </NavDropdown>
-      </Nav>
+      <div>
+        <Nav>
+          <NavDropdown title="Usuarios" id="basic-nav-dropdown">
+            <LinkContainer to={'/admin/viewUsers'}>
+              <MenuItem>Ver Usuarios</MenuItem>
+            </LinkContainer>
+            <MenuItem divider />
+            <LinkContainer to={'/admin/createUser'}>
+              <MenuItem>Crear Usuarios</MenuItem>
+            </LinkContainer>
+
+          </NavDropdown>
+          <NavDropdown title="Colegios" id="basic-nav-dropdown">
+            <MenuItem>Ver Colegios</MenuItem>
+            <MenuItem divider />
+            <MenuItem>Crear Colegio</MenuItem>
+          </NavDropdown>
+          <NavDropdown title="Avisos" id="basic-nav-dropdown">
+            <MenuItem>Ver avisos</MenuItem>
+            <MenuItem divider />
+            <MenuItem>Crear Avisos</MenuItem>
+          </NavDropdown>
+        </Nav>
+        <Nav pullRight>
+          <NavDropdown title="Mi Usuario" id="basic-nav-dropdown">
+            <MenuItem>Mi Sesión</MenuItem>
+            <MenuItem divider />
+            <LinkContainer to="/login">
+              <MenuItem onClick={() => this.logOut()}>Cerrar Sesión</MenuItem>
+            </LinkContainer>
+          </NavDropdown>
+        </Nav>
+      </div>
     );
   }
 

@@ -3,7 +3,7 @@ import { Col, Form, FormGroup, FormControl, Button, ControlLabel, Alert } from '
 import firebase from 'firebase';
 import PropTypes from 'prop-types';
 
-export default class NewUser extends Component {
+export default class EditUser extends Component {
 
   constructor(props) {
     super(props);
@@ -13,25 +13,31 @@ export default class NewUser extends Component {
     };
   }
 
+  componentWillMount() {
+    firebase.database().ref(`users/${this.props.match.params.editableUser}`).on('value', user => this.setState({
+      nombre: user.val().nombre,
+      rut: user.val().rut,
+      email: user.val().email,
+      celular: user.val().celular,
+      tipo: user.val().tipo,
+    }));
+  }
+
   edit(e) {
     e.preventDefault();
-    const { secondaryApp } = this.props;
     const { nombre, tipo, email, celular, rut } = this.state;
+    this.setState({ loading: true });
     if (nombre && tipo && rut && email) {
       this.setState({ loading: true });
-      secondaryApp.auth().createUserWithEmailAndPassword(email, rut).catch(error => this.setState({ error }))
-      .then(user =>
-        firebase.database().ref(`/users/${user.uid}`).set({
-          email,
-          nombre,
-          visibility: true,
-          tipo,
-          rut,
-          celular,
-        })
-        .then(secondaryApp.auth().signOut())
-        .then(this.setState({ loading: false, alert: `Usuario ${nombre} fue creado correctamente` }))
-      );
+      firebase.database().ref(`/users/${this.props.match.params.editableUser}`).update({
+        email,
+        nombre,
+        visibility: true,
+        tipo,
+        rut,
+        celular,
+      })
+      .then(this.setState({ loading: false, alert: `Usuario ${nombre} fue editado correctamente` }));
     }
   }
 
@@ -39,7 +45,7 @@ export default class NewUser extends Component {
     const { nombre, alert, tipo, email, loading, celular, rut } = this.state;
     return (
       <Col xs={12} mdOffset={2} md={8}>
-        <h1>Crear usuarios</h1>
+        <h1>Editar Usuario</h1>
         <Form horizontal onSubmit={e => this.edit(e)}>
           <FormGroup controlId="formHorizontalEmail">
             <ControlLabel>Nombre</ControlLabel>
@@ -69,7 +75,7 @@ export default class NewUser extends Component {
           </FormGroup>
           <p><small>* La contraseña sera el rut</small></p>
           <Button bsStyle={!loading ? 'success' : 'disabled'} onClick={e => this.edit(e)}>
-            {!loading ? 'Crear Usuario' : 'Creando Usuario...'}
+            {!loading ? 'Editar Usuario' : 'Editando Usuario...'}
           </Button>
         </Form>
         {alert.length > 0 &&
@@ -77,7 +83,7 @@ export default class NewUser extends Component {
             <hr />
             <Alert bsStyle="success" >
               <h3>{alert}</h3>
-              <Button bsStyle="success" onClick={() => this.setState({ alert: false, nombre: '', tipo: '', email: '', celular: '', rut: '' })}>
+              <Button bsStyle="success" onClick={() => this.setState({ alert: false })}>
                 Aceptar
               </Button>
             </Alert>
@@ -88,6 +94,7 @@ export default class NewUser extends Component {
   }
 }
 
-NewUser.propTypes = {
+EditUser.propTypes = {
   secondaryApp: PropTypes.object,
+  match: PropTypes.object,
 };
