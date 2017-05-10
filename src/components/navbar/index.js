@@ -19,10 +19,14 @@ class NavBar extends Component {
   }
 
   renderLanding() {
-    const { user } = this.props;
+    const { userData, user } = this.props;
+    let redirect = '';
+    if (!user) redirect = '/login';
+    else if (userData.tipo === 'SA') redirect = '/admin';
+    else if (userData.tipo === 'A') { redirect = '/main'; }
     return (
       <Nav pullRight>
-        <LinkContainer to={user ? '/admin' : '/login'}>
+        <LinkContainer to={redirect}>
           <NavItem>Mi Sesion</NavItem>
         </LinkContainer>
       </Nav>
@@ -34,9 +38,9 @@ class NavBar extends Component {
       <Nav pullRight>
         <MenuItem >Mensajes</MenuItem>
         <NavDropdown title="Mi Usuario" id="basic-nav-dropdown">
-          <MenuItem>
-            Mi Sesión
-          </MenuItem>
+          <LinkContainer to="/main/myUser">
+            <MenuItem>Mi Sesión</MenuItem>
+          </LinkContainer>
           <MenuItem divider />
           <LinkContainer to="/login">
             <MenuItem onClick={() => this.logOut()}>Cerrar Sesión</MenuItem>
@@ -73,7 +77,9 @@ class NavBar extends Component {
         </Nav>
         <Nav pullRight>
           <NavDropdown title="Mi Usuario" id="basic-nav-dropdown">
-            <MenuItem>Mi Sesión</MenuItem>
+            <LinkContainer to="/admin/myUser">
+              <MenuItem>Mi Sesión</MenuItem>
+            </LinkContainer>
             <MenuItem divider />
             <LinkContainer to="/login">
               <MenuItem onClick={() => this.logOut()}>Cerrar Sesión</MenuItem>
@@ -85,11 +91,14 @@ class NavBar extends Component {
   }
 
   render() {
+    let origin = '';
+    if (location.pathname.includes('/main')) origin = '/main';
+    else if (location.pathname.includes('/admin')) origin = '/admin';
     return (
       <Navbar fixedTop fluid>
         <Col xs={12} md={10} mdOffset={1}>
           <Navbar.Header style={{ alignItems: 'center' }}>
-            <Link to="/" >
+            <Link to={origin} >
               <img src={Logo} alt={'Logo'} height={36} style={{ marginTop: 2 }} />
             </Link>
             <Navbar.Toggle />
@@ -108,6 +117,7 @@ class NavBar extends Component {
 NavBar.propTypes = {
   location: PropTypes.object,
   user: PropTypes.object,
+  userData: PropTypes.object,
   history: PropTypes.shape({
     push: React.PropTypes.func.isRequired,
   }).isRequired,

@@ -5,8 +5,10 @@ import firebase from 'firebase';
 import NavBar from './components/navbar';
 import LandingPage from './components/landingPage';
 import Login from './components/login';
-import Main from './components/main';
 import Admin from './components/admin';
+import Main from './components/main';
+
+import MyUser from './components/myUser';
 
 import NewUser from './components/admin/newUser';
 import ViewUsers from './components/admin/viewUsers';
@@ -15,9 +17,16 @@ import EditUser from './components/admin/editUser';
 import Director from './components/director';
 import Profesor from './components/profesor';
 
-// TODO: Crear Usuarios - tipos (Director, Profe, Admin)
-// TODO: Crear vista Admin
-// TODO: validar login Firebase
+import ReactGA from 'react-ga';
+ReactGA.initialize('UA-97048045-2', {
+  // debug: true,
+});
+
+function logPageView() {
+  ReactGA.set({ page: window.location.pathname });
+  ReactGA.pageview(window.location.pathname);
+}
+
 
 export default class App extends React.Component {
   constructor(props) {
@@ -36,6 +45,8 @@ export default class App extends React.Component {
       height: window.innerHeight,
       user: false,
       secondaryApp: firebase.initializeApp(config, 'Secondary'),
+      update: true,
+      userData: [],
     };
   }
 
@@ -43,28 +54,46 @@ export default class App extends React.Component {
     this.setState({ loading: true });
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.setState({ user });
+        firebase.database().ref(`users/${user.uid}`).on('value', userData => this.setState({ userData: userData.val(), user }));
       } else {
         this.setState({ user: false });
       }
     });
     this.setState({ loading: false });
   }
+
   componentDidMount() {
     window.addEventListener('resize', () => this.handleResize());
   }
+
+  componentWillUpdate() {
+    const { update } = this.state;
+    if (update) {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          firebase.database().ref(`users/${user.uid}`).on('value', userData => this.setState({ userData: userData.val() }));
+        } else {
+          this.setState({ user: false });
+        }
+      });
+      this.setState({ update: false });
+    }
+  }
+
   handleResize() {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
+
   render() {
     return (
-      <Router>
+      <Router onUpdate={logPageView}>
         <div>
           <NavBar history={history} {...this.state} />
           <div style={{ paddingTop: 40 }}>
             <Route exact path="/" render={props => <LandingPage {...this.state} {...props} />} />
             <Route path="/login" render={props => <Login {...this.state} {...props} />} />
+            <Route path="/admin/myUser" render={props => <MyUser {...this.state} {...props} />} />
             <Route path="/main" render={props => <Main {...this.state} {...props} />} />
             <Route path="/admin" render={props => <Admin {...this.state} {...props} />} />
             <Route path="/admin/createUser" render={props => <NewUser {...this.state} {...props} />} />

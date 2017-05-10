@@ -14,7 +14,7 @@ export default class Admin extends Component {
   render() {
     return (
       <Col xs={12} mdOffset={2} md={8}>
-        <h2>Bienvenido {this.props.user.email} - Super-Administrador</h2>
+        {/* <h2>Bienvenido {this.props.user.email} - Super-Administrador</h2> */}
       </Col>
     );
   }

@@ -74,7 +74,7 @@ export default class EditUser extends Component {
             </FormControl>
           </FormGroup>
           <p><small>* La contraseña sera el rut</small></p>
-          <Button bsStyle={!loading ? 'success' : 'disabled'} onClick={e => this.edit(e)}>
+          <Button bsStyle="success" disabled={loading} onClick={e => this.edit(e)}>
             {!loading ? 'Editar Usuario' : 'Editando Usuario...'}
           </Button>
         </Form>
