@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import firebase from 'firebase';
+import ReactGA from 'react-ga';
+import createHistory from 'history/createBrowserHistory';
 
 import NavBar from './components/navbar';
 import LandingPage from './components/landingPage';
@@ -14,19 +16,25 @@ import NewUser from './components/admin/newUser';
 import ViewUsers from './components/admin/viewUsers';
 import EditUser from './components/admin/editUser';
 
+import NewSchool from './components/admin/newSchool';
+import ViewSchools from './components/admin/viewSchools';
+
 import Director from './components/director';
 import Profesor from './components/profesor';
 
-import ReactGA from 'react-ga';
 ReactGA.initialize('UA-97048045-2', {
-  // debug: true,
+  debug: true,
 });
 
-function logPageView() {
-  ReactGA.set({ page: window.location.pathname });
-  ReactGA.pageview(window.location.pathname);
-}
+const history = createHistory()
+history.listen((location, action) => {
+  console.log('hello');
+  ReactGA.set({ page: location.pathname });
+  ReactGA.pageview(location.pathname);
+});
 
+// TODO: Add google analitycs
+// TODO: add recovery password
 
 export default class App extends React.Component {
   constructor(props) {
@@ -86,19 +94,22 @@ export default class App extends React.Component {
 
 
   render() {
+    // console.log(historyGA);
     return (
-      <Router onUpdate={logPageView}>
+      <Router history={history}>
         <div>
           <NavBar history={history} {...this.state} />
           <div style={{ paddingTop: 40 }}>
             <Route exact path="/" render={props => <LandingPage {...this.state} {...props} />} />
             <Route path="/login" render={props => <Login {...this.state} {...props} />} />
-            <Route path="/admin/myUser" render={props => <MyUser {...this.state} {...props} />} />
             <Route path="/main" render={props => <Main {...this.state} {...props} />} />
             <Route path="/admin" render={props => <Admin {...this.state} {...props} />} />
             <Route path="/admin/createUser" render={props => <NewUser {...this.state} {...props} />} />
             <Route path="/admin/viewUsers" render={props => <ViewUsers {...this.state} {...props} />} />
+            <Route path="/admin/newSchool" render={props => <NewSchool {...this.state} {...props} />} />
+            <Route path="/admin/viewSchools" render={props => <ViewSchools {...this.state} {...props} />} />
             <Route path="/admin/editUser/:editableUser" render={props => <EditUser {...this.state} {...props} />} />
+            <Route path="/admin/myUser" render={props => <MyUser {...this.state} {...props} />} />
             <Route path="/main/profesor" render={props => <Profesor {...this.state} {...props} />} />
             <Route path="/main/director" render={props => <Director {...this.state} {...props} />} />
           </div>

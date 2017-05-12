@@ -53,7 +53,6 @@ export default class MyUSer extends Component {
     const { newPassword, confirmPassword, oldPassword } = this.state;
     const { user } = this.props;
     const credential = firebase.auth.EmailAuthProvider.credential(user.email, oldPassword);
-    console.log(credential);
     if (newPassword === confirmPassword) {
       user.reauthenticate(credential).then(user.updatePassword(newPassword).then(this.setState({ loading: false, alert: 'Contraseña actualizada correctamente' }), error => this.setState({ error })));
     } else {

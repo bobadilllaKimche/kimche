@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, FormGroup, Col, FormControl, Image, Button, Alert, InputGroup, Glyphicon } from 'react-bootstrap';
+import { Form, FormGroup, Col, FormControl, Image, Button, Alert, InputGroup, Glyphicon, ControlLabel } from 'react-bootstrap';
 import firebase from 'firebase';
 
 import Logo from '../../img/logoChico.png';
@@ -15,6 +15,8 @@ export default class Login extends Component {
       password: '',
       error: '',
       loading: false,
+      recoveryView: false,
+      messageRecovery: '',
     };
   }
 
@@ -34,6 +36,26 @@ export default class Login extends Component {
     }
   }
 
+  recovery() {
+    const { email } = this.state;
+    firebase.auth().sendPasswordResetEmail(email).then(() => {
+      this.setState({ messageRecovery: true });
+    }, error => this.setState({ error }))
+    .catch(error => this.setState({ error }));
+  }
+
+  renderMessage() {
+    return (
+      <div>
+        <hr />
+        <Alert bsStyle="success">
+          <h4>Se ha enviado un mail para recuperar su contraseña</h4>
+          <Button style={{ marginTop: 10 }}block bsStyle="success" onClick={() => this.setState({ messageRecovery: false })}>Ocultar Alerta</Button>
+        </Alert>
+      </div>
+    );
+  }
+
   renderError(error) {
     return (
       <Alert bsStyle="danger">
@@ -46,8 +68,7 @@ export default class Login extends Component {
 
   render() {
     const { height } = this.props;
-    const { loading, error } = this.state;
-    console.log(this.state.user);
+    const { loading, error, recoveryView, messageRecovery } = this.state;
     const firstContainer = {
       backgroundImage: `url(${imgBlur})`,
       minHeight: height - 40,
@@ -65,22 +86,35 @@ export default class Login extends Component {
             <center>
               <Image src={Logo} responsive style={{ padding: '3%' }} />
             </center>
-            <FormGroup controlId="formHorizontalEmail">
-              <InputGroup style={{ paddingBottom: 10 }}>
-                <InputGroup.Addon><Glyphicon glyph="user" /></InputGroup.Addon>
-                <FormControl type="email" placeholder="Email" value={this.state.email} onChange={email => this.setState({ email: email.target.value })} />
-              </InputGroup>
-              <InputGroup style={{ paddingBottom: 10 }}>
-                <InputGroup.Addon><Glyphicon glyph="lock" /></InputGroup.Addon>
-                <FormControl type="password" placeholder="Contraseña" value={this.state.password} onChange={password => this.setState({ password: password.target.value })} />
-              </InputGroup>
-              <Button type="submit" bsStyle="success" disabled={loading} block>
-                {loading ? 'Ingresando' : 'Ingresar'}
-              </Button>
-            </FormGroup>
-            <Col xs={12}>
-              {error.message && this.renderError(error)}
-            </Col>
+            {recoveryView ?
+              <FormGroup controlId="formHorizontalEmail">
+                <ControlLabel style={{ color: 'white' }}>Ingresa el mail de tu usuario</ControlLabel>
+                <InputGroup style={{ paddingBottom: 10 }}>
+                  <InputGroup.Addon><Glyphicon glyph="user" /></InputGroup.Addon>
+                  <FormControl type="email" placeholder="Email" value={this.state.email} onChange={email => this.setState({ email: email.target.value })} />
+                </InputGroup>
+                <Button type="submit" bsStyle="success" block onClick={() => this.recovery()}>
+                  Recuperar Contraseña
+                </Button>
+                {messageRecovery && this.renderMessage()}
+              </FormGroup>
+            :
+              <FormGroup controlId="formHorizontalEmail">
+                <InputGroup style={{ paddingBottom: 10 }}>
+                  <InputGroup.Addon><Glyphicon glyph="user" /></InputGroup.Addon>
+                  <FormControl type="email" placeholder="Email" value={this.state.email} onChange={email => this.setState({ email: email.target.value })} />
+                </InputGroup>
+                <InputGroup style={{ paddingBottom: 10 }}>
+                  <InputGroup.Addon><Glyphicon glyph="lock" /></InputGroup.Addon>
+                  <FormControl type="password" placeholder="Contraseña" value={this.state.password} onChange={password => this.setState({ password: password.target.value })} />
+                </InputGroup>
+                <Button type="submit" bsStyle="success" disabled={loading} block>
+                  {loading ? 'Ingresando' : 'Ingresar'}
+                </Button>
+                <Button style={{ color: 'white' }} bsStyle="link" block onClick={() => this.setState({ recoveryView: true })}>Recuperar Contraseña</Button>
+                {error.message && this.renderError(error)}
+              </FormGroup>
+            }
           </Form>
         </Col>
       </div>
