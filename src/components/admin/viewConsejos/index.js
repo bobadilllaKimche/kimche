@@ -4,7 +4,7 @@ import { Col, Table } from 'react-bootstrap';
 import firebase from 'firebase';
 import TiEdit from 'react-icons/lib/ti/edit';
 
-export default class ViewSchools extends Component {
+export default class ViewConsejo extends Component {
 
   constructor(props) {
     super(props);
@@ -12,6 +12,8 @@ export default class ViewSchools extends Component {
       director: '',
       dataUsers: [],
       dataSchools: [],
+      loading: false,
+      states: ['No visto', 'Visto y no editado', 'Visto y editado'],
     };
   }
 
@@ -20,6 +22,15 @@ export default class ViewSchools extends Component {
     const dataSchools = [];
     const dataSchoolsKeys = [];
     const dataUserKeys = [];
+    const dataConsejo = [];
+    const dataConsejoKeys = [];
+    firebase.database().ref('consejos').on('value', consejo => {
+      for (const [key, value] of Object.entries(consejo.val())) {
+        dataConsejo.push(value);
+        dataConsejoKeys.push(key);
+      }
+      this.setState({ dataConsejo, dataConsejoKeys });
+    });
     firebase.database().ref('users').on('value', users => {
       for (const [key, value] of Object.entries(users.val())) {
         dataUsers.push(value);
@@ -27,7 +38,7 @@ export default class ViewSchools extends Component {
       }
       this.setState({ dataUsers, dataUserKeys });
     });
-    firebase.database().ref('/schools').on('value', data => {
+    firebase.database().ref('schools').on('value', data => {
       for (const [key, value] of Object.entries(data.val())) {
         dataSchools.push(value);
         dataSchoolsKeys.push(key);
@@ -37,7 +48,7 @@ export default class ViewSchools extends Component {
   }
 
   render() {
-    const { dataUsers, dataSchools, dataSchoolsKeys, dataUserKeys } = this.state;
+    const { dataUsers, dataSchools, dataSchoolsKeys, dataUserKeys, dataConsejo, dataConsejoKeys, states } = this.state;
     if (dataSchools) {
       dataSchools.map(school => {
         if (school.profesores) {
@@ -47,23 +58,27 @@ export default class ViewSchools extends Component {
     }
     return (
       <Col xs={12} mdOffset={2} md={8}>
-        <h3>Lista de Colegios</h3>
+        <h3>Lista de Avisos</h3>
         <Table responsive>
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Director</th>
-              <th>profesores</th>
+              <th>Colegio</th>
+              <th>Fecha Creacion</th>
+              <th>Estado</th>
+              <th>Mensaje</th>
+              <th>Tipo</th>
               <th>Editar</th>
             </tr>
           </thead>
           <tbody>
-            {dataSchools && dataSchools.map((school, i) =>
+            {dataConsejo && dataConsejo.map((consejo, i) =>
               <tr key={i}>
-                <td>{school.nombre}</td>
-                <td>{dataUsers[dataUserKeys.indexOf(school.director)].nombre}</td>
-                <td>{school.profesores.map((profesor, j) => <p key={j}>{dataUsers[dataUserKeys.indexOf(profesor)].nombre}</p>)}</td>
-                <td style={{ cursor: 'pointer' }} onClick={() => this.props.history.push(`/admin/editSchool/${dataSchoolsKeys[i]}`)}>Editar <TiEdit size={25} /></td>
+                <td>{dataSchools[dataSchoolsKeys.indexOf(consejo.school)].nombre}</td>
+                <td>{consejo.createData}</td>
+                <td>{states[consejo.state]}</td>
+                <td>{consejo.message}</td>
+                <td>{consejo.tipo}</td>
+                <td style={{ cursor: 'pointer' }} onClick={() => this.props.history.push(`/admin/editConsejo/${dataConsejoKeys[i]}`)}>Editar <TiEdit size={25} /></td>
               </tr>
           )}
           </tbody>
@@ -73,6 +88,6 @@ export default class ViewSchools extends Component {
   }
 }
 
-ViewSchools.propTypes = {
+ViewConsejo.propTypes = {
   history: PropTypes.object,
 };

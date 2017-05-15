@@ -10,12 +10,16 @@ export default class ViewUsers extends Component {
     super(props);
     this.state = {
       director: '',
+      dataUsers: [],
+      dataSchools: [],
+      dataUsersKeys: [],
     };
   }
 
   componentWillMount() {
     const dataUsers = [];
     const dataUsersKeys = [];
+    const dataSchools = [];
     firebase.database().ref('users').on('value', users => {
       for (const [key, value] of Object.entries(users.val())) {
         dataUsers.push(value);
@@ -23,10 +27,16 @@ export default class ViewUsers extends Component {
       }
       this.setState({ dataUsers, dataUsersKeys });
     });
+    firebase.database().ref('/schools').on('value', data => {
+      for (const [, value] of Object.entries(data.val())) {
+        dataSchools.push(value);
+      }
+      this.setState({ dataSchools });
+    });
   }
 
   render() {
-    const { dataUsers, dataUsersKeys } = this.state;
+    const { dataUsers, dataUsersKeys, dataSchools } = this.state;
     return (
       <Col xs={12} mdOffset={2} md={8}>
         <h3>Lista de Usuarios</h3>
@@ -35,6 +45,7 @@ export default class ViewUsers extends Component {
             <tr>
               <th>Nombre</th>
               <th>Email</th>
+              <th>Colegio</th>
               <th>Celular</th>
               <th>RUT</th>
               <th>Tipo</th>
@@ -46,9 +57,10 @@ export default class ViewUsers extends Component {
               <tr key={i}>
                 <td>{user.nombre}</td>
                 <td>{user.email}</td>
+                <td>{user.school || user.school === 0 ? dataSchools[user.school - 1].nombre : ''}</td>
                 <td>{user.celular}</td>
                 <td>{user.rut}</td>
-                <td>{user.tipo}</td>
+                <td>{user.tipo === 'SA' ? 'Super Administrador' : user.tipo === 'A' ? 'Administrador' : 'Profesor' }</td>
                 <td style={{ cursor: 'pointer' }} onClick={() => this.props.history.push(`/admin/editUser/${dataUsersKeys[i]}`)}>Editar <TiEdit size={25} /></td>
               </tr>
           )}

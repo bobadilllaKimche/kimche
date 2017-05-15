@@ -73,10 +73,14 @@ class NavBar extends Component {
               <MenuItem>Crear Colegio</MenuItem>
             </LinkContainer>
           </NavDropdown>
-          <NavDropdown title="Avisos" id="basic-nav-dropdown">
-            <MenuItem>Ver avisos</MenuItem>
+          <NavDropdown title="Consejos" id="basic-nav-dropdown">
+            <LinkContainer to={'/admin/viewConsejos'}>
+              <MenuItem>Ver Consejos</MenuItem>
+            </LinkContainer>
             <MenuItem divider />
-            <MenuItem>Crear Avisos</MenuItem>
+            <LinkContainer to={'/admin/newConsejo'}>
+              <MenuItem>Crear Consejo</MenuItem>
+            </LinkContainer>
           </NavDropdown>
         </Nav>
         <Nav pullRight>

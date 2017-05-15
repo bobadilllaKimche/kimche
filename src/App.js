@@ -19,6 +19,9 @@ import EditUser from './components/admin/editUser';
 import NewSchool from './components/admin/newSchool';
 import ViewSchools from './components/admin/viewSchools';
 
+import NewConsejo from './components/admin/newConsejo';
+import ViewConsejos from './components/admin/viewConsejos';
+
 import Director from './components/director';
 import Profesor from './components/profesor';
 
@@ -28,7 +31,6 @@ ReactGA.initialize('UA-97048045-2', {
 
 const history = createHistory()
 history.listen((location, action) => {
-  console.log('hello');
   ReactGA.set({ page: location.pathname });
   ReactGA.pageview(location.pathname);
 });
@@ -51,10 +53,10 @@ export default class App extends React.Component {
     this.state = {
       width: window.innerWidth,
       height: window.innerHeight,
-      user: false,
+      user: {},
       secondaryApp: firebase.initializeApp(config, 'Secondary'),
       update: true,
-      userData: [],
+      userData: {},
     };
   }
 
@@ -94,7 +96,7 @@ export default class App extends React.Component {
 
 
   render() {
-    // console.log(historyGA);
+    const { userData } = this.state;
     return (
       <Router history={history}>
         <div>
@@ -103,13 +105,24 @@ export default class App extends React.Component {
             <Route exact path="/" render={props => <LandingPage {...this.state} {...props} />} />
             <Route path="/login" render={props => <Login {...this.state} {...props} />} />
             <Route path="/main" render={props => <Main {...this.state} {...props} />} />
-            <Route path="/admin" render={props => <Admin {...this.state} {...props} />} />
-            <Route path="/admin/createUser" render={props => <NewUser {...this.state} {...props} />} />
-            <Route path="/admin/viewUsers" render={props => <ViewUsers {...this.state} {...props} />} />
-            <Route path="/admin/newSchool" render={props => <NewSchool {...this.state} {...props} />} />
-            <Route path="/admin/viewSchools" render={props => <ViewSchools {...this.state} {...props} />} />
-            <Route path="/admin/editUser/:editableUser" render={props => <EditUser {...this.state} {...props} />} />
-            <Route path="/admin/myUser" render={props => <MyUser {...this.state} {...props} />} />
+            {userData.tipo === 'SA' &&
+              <div>
+                <Route path="/admin" render={props => <Admin {...this.state} {...props} />} />
+                <Route path="/admin/myUser" render={props => <MyUser {...this.state} {...props} />} />
+
+                <Route path="/admin/createUser" render={props => <NewUser {...this.state} {...props} />} />
+                <Route path="/admin/viewUsers" render={props => <ViewUsers {...this.state} {...props} />} />
+                <Route path="/admin/editUser/:editableUser" render={props => <EditUser {...this.state} {...props} />} />
+
+                <Route path="/admin/newSchool" render={props => <NewSchool {...this.state} {...props} />} />
+                <Route path="/admin/viewSchools" render={props => <ViewSchools editable={false} {...this.state} {...props} />} />
+                <Route path="/admin/editSchool/:schoolId" render={props => <NewSchool editable {...this.state} {...props} />} />
+
+                <Route path="/admin/newConsejo" render={props => <NewConsejo editable={false} {...this.state} {...props} />} />
+                <Route path="/admin/editConsejo/:consejoId" render={props => <NewConsejo editable {...this.state} {...props} />} />
+                <Route path="/admin/viewConsejos" render={props => <ViewConsejos {...this.state} {...props} />} />
+              </div>
+            }
             <Route path="/main/profesor" render={props => <Profesor {...this.state} {...props} />} />
             <Route path="/main/director" render={props => <Director {...this.state} {...props} />} />
           </div>
