@@ -7,7 +7,7 @@ import Spinner from 'react-spinkit';
 import FaClose from 'react-icons/lib/fa/close';
 import moment from 'moment';
 
-// TODO: Mensaje, Profesor/Director **, fecha, tipo, porque paso, accion, visto, estado
+// TODO: Mensaje, Profesor/Director **, fecha, tipo, porque paso, accion, visto, estado #urgent
 
 export default class newConsejo extends Component {
 
@@ -28,6 +28,7 @@ export default class newConsejo extends Component {
         { label: 'apoyar', value: 'apoyar' },
         { label: 'conservar', value: 'conservar' },
         { label: 'corregir', value: 'corregir' },
+        { label: 'soporte', value: 'soporte' },
       ],
     };
   }
@@ -41,30 +42,26 @@ export default class newConsejo extends Component {
     });
     firebase.database().ref('/users').on('value', data => {
       const usersData = [];
-      const usersDataKeys = [];
       for (const [key, value] of Object.entries(data.val())) { if (value.tipo === 'A' || value.tipo === 'P') usersData.push({ value: key, data: value }); }
-      this.setState({ usersData, loading: false, usersDataKeys });
+      this.setState({ usersData, loading: false });
+      if (editable) {
+        firebase.database().ref(`/consejos/${match.params.consejoId}`).on('value', value => {
+          const aviso = value.val();
+          this.setState({ school: aviso.school, users: aviso.users, message: aviso.message, rowTable: aviso.rowTable, state: aviso.state, tipo: aviso.tipo });
+          this.changeSchool(aviso.school, usersData);
+        });
+      }
     });
-    if (editable) {
-      firebase.database().ref(`/consejos/${match.params.consejoId}`).on('value', data => {
-        const aviso = data.val();
-        this.setState({ school: aviso.school, users: aviso.users, message: aviso.message, rowTable: aviso.rowTable, state: aviso.state, tipo: aviso.tipo, newId: match.params.consejoId });
-        this.changeSchool(aviso.school);
-      });
-    } else {
-      firebase.database().ref('/consejos').on('value', data => {
-        this.setState({ newId: data.val() === null ? 1 : data.val().length + 1 });
-      });
-    }
   }
 
   create(e) {
     e.preventDefault();
-    const { school, newId, users, message, rowTable, tipo } = this.state;
+    const { school, users, message, rowTable, tipo, usersData } = this.state;
     if (school && users && message) {
       this.setState({ loading: true });
-      firebase.database().ref(`/consejos/${newId}`).set({
-        school: school.value,
+      const key = firebase.database().ref('consejos').push().key;
+      firebase.database().ref(`consejos/${key}`).update({
+        school,
         users: users.map(p => p.value),
         message,
         rowTable,
@@ -74,7 +71,14 @@ export default class newConsejo extends Component {
         action: [],
         diagnostico: [],
       })
-      .then(this.setState({ loading: false, alert: 'Aviso creado correctamente', newId: newId + 1 }));
+      .then(users.forEach(user => {
+        const avisos = usersData.filter(userValue => userValue.value === user.value)[0].data.avisos === undefined ? [] : usersData.filter(userValue => userValue.value === user.value)[0].data.avisos;
+        avisos.push(key);
+        firebase.database().ref(`users/${user.value}`).update({
+          avisos,
+        });
+      }))
+      .then(this.setState({ loading: false, alert: 'Aviso creado correctamente', school: '', users: [], tipo: '', message: '' }));
     } else {
       this.setState({ loading: false, error: 'Seleccione almenos un colegio, usuario y mensaje para crear el aviso' });
     }
@@ -82,12 +86,13 @@ export default class newConsejo extends Component {
 
   edit(e) {
     e.preventDefault();
-    const { school, newId, users, message, rowTable, tipo } = this.state;
+    const { school, users, message, rowTable, tipo } = this.state;
+    const { match } = this.props;
     if (school && users && message) {
       this.setState({ loading: true });
-      firebase.database().ref(`/consejos/${newId}`).update({
+      firebase.database().ref(`/consejos/${match.params.consejoId}`).update({
         school: school.value,
-        users: users.map(p => p.value),
+        // users: users.map(p => p.value),
         message,
         rowTable,
         tipo: tipo.value,
@@ -98,15 +103,11 @@ export default class newConsejo extends Component {
     }
   }
 
-  changeSchool(school) {
-    const { usersData } = this.state;
-    const { editable } = this.props;
-    if (school !== null) {
-      const userListInfo = [];
-      const valueSchool = editable ? school : school.value;
-      usersData.filter(user => `${user.data.school}` === valueSchool).forEach(user => userListInfo.push({ value: user.value, label: user.data.nombre }));
-      this.setState({ school, userListInfo });
-    } else this.setState({ school });
+  changeSchool(schoolNew, userDataMount) {
+    const usersData = userDataMount || this.state.usersData;
+    const userListInfo = [];
+    usersData.filter(user => `${user.data.school}` === schoolNew).forEach(user => userListInfo.push({ value: user.value, label: user.data.nombre }));
+    this.setState({ userListInfo, school: schoolNew });
   }
 
   render() {
@@ -121,9 +122,9 @@ export default class newConsejo extends Component {
             <Form horizontal onSubmit={e => this.create(e)}>
               <FormGroup controlId="formHorizontalEmail">
                 <ControlLabel>Colegio</ControlLabel>
-                <Select name="form-field-name" placeholder="Seleccione el colegio..." options={schoolsData} onChange={schoolVal => this.changeSchool(schoolVal)} value={school} />
+                <Select name="form-field-name" placeholder="Seleccione el colegio..." options={schoolsData} onChange={schoolValue => this.changeSchool(schoolValue.value)} value={school} />
                 <ControlLabel>Usuarios Involucrados</ControlLabel>
-                <Select disabled={school === null} multi name="form-field-name" placeholder="Seleccione los Involucrados..." options={userListInfo} onChange={userVal => this.setState({ users: userVal })} value={users} />
+                <Select disabled={school === null || editable} multi name="form-field-name" placeholder="Seleccione los Involucrados..." options={userListInfo} onChange={userVal => this.setState({ users: userVal })} value={users} />
                 <ControlLabel>Tipo de Mensaje</ControlLabel>
                 <Select name="form-field-name" placeholder="Seleccione el tipo de Mensaje..." options={tipoData} onChange={tipoval => this.setState({ tipo: tipoval })} value={tipo} />
                 <ControlLabel>Escriba el Mensaje</ControlLabel>
@@ -140,7 +141,7 @@ export default class newConsejo extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {rowTable.map((row, i) =>
+                  {rowTable && rowTable.map((row, i) =>
                     <tr key={i} >
                       <td><FormControl type="input" value={row.alumno} onChange={e => { rowTable[i].alumno = e.target.value; this.setState({ rowTable }); }} /></td>
                       <td><FormControl type="input" value={row.data} onChange={e => { rowTable[i].data = e.target.value; this.setState({ rowTable }); }} /></td>

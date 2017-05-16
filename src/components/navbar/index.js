@@ -6,6 +6,9 @@ import Logo from '../../img/logoChico.png';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
 
+// TODO: agregar colegio en navbar #next
+// TODO: agregar tipo de usuario navbar #next
+
 class NavBar extends Component {
 
   constructor(props) {
@@ -34,26 +37,40 @@ class NavBar extends Component {
   }
 
   renderMain() {
+    const { userData } = this.props;
     return (
-      <Nav pullRight>
-        <MenuItem >Mensajes</MenuItem>
-        <NavDropdown title="Mi Usuario" id="basic-nav-dropdown">
-          <LinkContainer to="/main/myUser">
-            <MenuItem>Mi Sesión</MenuItem>
+      <div>
+        <Nav>
+          <Navbar.Text style={{ color: '#D9230F' }}>
+            {userData.nombre}
+          </Navbar.Text>
+        </Nav>
+        <Nav pullRight>
+          <LinkContainer to="/main/messages">
+            <MenuItem >Mensajes</MenuItem>
           </LinkContainer>
-          <MenuItem divider />
-          <LinkContainer to="/login">
-            <MenuItem onClick={() => this.logOut()}>Cerrar Sesión</MenuItem>
-          </LinkContainer>
-        </NavDropdown>
-      </Nav>
+          <NavDropdown title="Mi Usuario" id="basic-nav-dropdown">
+            <LinkContainer to="/main/myUser">
+              <MenuItem>Mi Sesión</MenuItem>
+            </LinkContainer>
+            <MenuItem divider />
+            <LinkContainer to="/login">
+              <MenuItem onClick={() => this.logOut()}>Cerrar Sesión</MenuItem>
+            </LinkContainer>
+          </NavDropdown>
+        </Nav>
+      </div>
     );
   }
 
   renderAdmin() {
+    const { userData } = this.props;
     return (
       <div>
         <Nav>
+          <Navbar.Text style={{ color: '#D9230F' }}>
+            {userData.nombre}
+          </Navbar.Text>
           <NavDropdown title="Usuarios" id="basic-nav-dropdown">
             <LinkContainer to={'/admin/viewUsers'}>
               <MenuItem>Ver Usuarios</MenuItem>
@@ -100,8 +117,8 @@ class NavBar extends Component {
 
   render() {
     let origin = '';
-    if (location.pathname.includes('/main')) origin = '/main';
-    else if (location.pathname.includes('/admin')) origin = '/admin';
+    if (location.pathname.includes('/main')) origin = '/main/messages';
+    else if (location.pathname.includes('/admin')) origin = '/admin/viewConsejos';
     return (
       <Navbar fixedTop fluid>
         <Col xs={12} md={10} mdOffset={1}>
@@ -112,6 +129,7 @@ class NavBar extends Component {
             <Navbar.Toggle />
           </Navbar.Header>
           <Navbar.Collapse>
+
             {location.pathname === '/' && this.renderLanding()}
             {location.pathname.includes('/main') && this.renderMain()}
             {location.pathname.includes('/admin') && this.renderAdmin()}

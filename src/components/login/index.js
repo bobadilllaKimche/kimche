@@ -24,16 +24,16 @@ export default class Login extends Component {
     e.preventDefault();
     this.setState({ loading: true });
     const { email, password } = this.state;
-    if (email === 'profesor@kimche.co') this.props.history.push('/main/profesor');
-    else if (email === 'director@kimche.co') this.props.history.push('/main/director');
-    else {
-      firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(user => {
-          this.setState({ user, loading: false });
-          this.props.history.push('/admin');
-        })
-        .catch(error => this.setState({ error, loading: false }));
-    }
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(user => {
+        firebase.database().ref(`users/${user.uid}`).on('value', userData => {
+          if (userData.val().tipo === 'SA') this.props.history.push('/admin');
+          if (userData.val().tipo === 'A') this.props.history.push('/main/messages');
+          if (userData.val().tipo === 'P') this.props.history.push('/main/messages');
+          this.setState({ loading: false });
+        });
+      })
+      .catch(error => this.setState({ error, loading: false }));
   }
 
   recovery() {

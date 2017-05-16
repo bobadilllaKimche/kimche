@@ -22,21 +22,20 @@ import ViewSchools from './components/admin/viewSchools';
 import NewConsejo from './components/admin/newConsejo';
 import ViewConsejos from './components/admin/viewConsejos';
 
-import Director from './components/director';
-import Profesor from './components/profesor';
+import Director from './components/main/director';
+import Profesor from './components/main/profesor';
 
 ReactGA.initialize('UA-97048045-2', {
   debug: true,
 });
 
-const history = createHistory()
-history.listen((location, action) => {
+const history = createHistory();
+history.listen((location) => {
   ReactGA.set({ page: location.pathname });
   ReactGA.pageview(location.pathname);
 });
 
-// TODO: Add google analitycs
-// TODO: add recovery password
+// TODO: Revisar google analitycs #nicetohave
 
 export default class App extends React.Component {
   constructor(props) {
@@ -104,7 +103,7 @@ export default class App extends React.Component {
           <div style={{ paddingTop: 40 }}>
             <Route exact path="/" render={props => <LandingPage {...this.state} {...props} />} />
             <Route path="/login" render={props => <Login {...this.state} {...props} />} />
-            <Route path="/main" render={props => <Main {...this.state} {...props} />} />
+            {/* <Route path="/main" render={props => <Main {...this.state} {...props} />} /> */}
             {userData.tipo === 'SA' &&
               <div>
                 <Route path="/admin" render={props => <Admin {...this.state} {...props} />} />
@@ -123,8 +122,9 @@ export default class App extends React.Component {
                 <Route path="/admin/viewConsejos" render={props => <ViewConsejos {...this.state} {...props} />} />
               </div>
             }
-            <Route path="/main/profesor" render={props => <Profesor {...this.state} {...props} />} />
-            <Route path="/main/director" render={props => <Director {...this.state} {...props} />} />
+            {userData.tipo === 'A' && <Route path="/main/messages" render={props => <Director {...this.state} {...props} />} />}
+            {userData.tipo === 'P' && <Route path="/main/messages" render={props => <Profesor {...this.state} {...props} />} />}
+            {userData.tipo !== 'SA' && <Route path="/main/myUser" render={props => <MyUser {...this.state} {...props} />} />}
           </div>
         </div>
       </Router>

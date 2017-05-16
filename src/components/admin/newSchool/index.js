@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import Spinner from 'react-spinkit';
 
+  // TODO: arreglar editar directores y profesores #urgent
+
 export default class NewSchool extends Component {
 
   constructor(props) {
@@ -15,8 +17,10 @@ export default class NewSchool extends Component {
       newId: '',
       userDirector: [],
       userProfesores: [],
-      director: false,
+      directores: [],
       profesores: [],
+      directorChange: false,
+      profesorChange: false,
     };
   }
 
@@ -25,12 +29,7 @@ export default class NewSchool extends Component {
     if (editable) {
       firebase.database().ref(`/schools/${match.params.schoolId}`).on('value', data => {
         const school = data.val();
-        console.log(school);
-        this.setState({ nombre: school.nombre, director: school.director, profesores: school.profesores });
-      });
-    } else {
-      firebase.database().ref('/schools').on('value', data => {
-        this.setState({ newId: data.val() === null ? 1 : data.val().length + 1 });
+        this.setState({ nombre: school.nombre, directores: school.director, profesores: school.profesores });
       });
     }
     firebase.database().ref('/users').on('value', data => {
@@ -49,42 +48,48 @@ export default class NewSchool extends Component {
 
   create(e) {
     e.preventDefault();
-    const { nombre, director, profesores, newId } = this.state;
-    if (nombre && director) {
+    const { nombre, directores, profesores } = this.state;
+    if (nombre && directores) {
       this.setState({ loading: true });
-      firebase.database().ref(`/schools/${newId}`).set({
+      const key = firebase.database().ref('schools').push().key;
+      firebase.database().ref(`schools/${key}`).update({
         nombre,
-        director: director.value,
-        profesores: profesores.map(profesor => profesor.value),
+        director: directores.map(director => director.value),
+        profesores: profesores && profesores.map(profesor => profesor.value),
       })
-      .then(firebase.database().ref(`/users/${director.value}`).update({
-        school: newId,
-      }))
+      .then(directores.map(director =>
+        firebase.database().ref(`/users/${director.value}`).update({
+          school: key,
+        })
+      ))
       .then(profesores.map(profesor =>
           firebase.database().ref(`/users/${profesor.value}`).update({
-            school: newId,
+            school: key,
           })
         ))
-      .then(this.setState({ loading: false, alert: `Colegio ${nombre} fue creado correctamente`, newId: newId + 1 }));
+      .then(this.setState({ loading: false, alert: `Colegio ${nombre} fue creado correctamente` }));
     }
   }
 
   edit(e) {
     e.preventDefault();
-    const { nombre, director, profesores } = this.state;
+    const { nombre, directores, profesores, directorChange, profesorChange } = this.state;
     const schoolId = this.props.match.params.schoolId;
-    if (nombre && director) {
+    console.log(directores);
+    if (nombre && directores) {
       this.setState({ loading: true });
       firebase.database().ref(`/schools/${schoolId}`).update({
         nombre,
-        director: typeof director === 'string' ? director : director.value,
-        profesores: profesores.map(profesor => { if (typeof profesor === 'string') { return profesor; } else { return profesor.value; } }),
+        director: directores.map(director => director.value),
+        profesores: profesores ? profesores.map(profesor => profesor.value) : [],
       })
-      .then(firebase.database().ref(`/users/${typeof director === 'string' ? director : director.value}`).update({
-        school: schoolId,
-      }))
+      .then(directores.map(director =>
+        firebase.database().ref(`/users/${director.value}`).update({
+          school: schoolId,
+        })
+      ))
       .then(profesores.map(profesor =>
-          firebase.database().ref(`/users/${typeof profesor === 'string' ? profesor : profesor.value}`).update({
+          firebase.database().ref(`/users/${profesor.value}`).update({
             school: schoolId,
           })
         ))
@@ -93,7 +98,7 @@ export default class NewSchool extends Component {
   }
 
   render() {
-    const { nombre, alert, loading, userDirector, userProfesores, director, profesores } = this.state;
+    const { nombre, alert, loading, userDirector, userProfesores, directores, profesores } = this.state;
     const { editable } = this.props;
     return (
       <Col xs={12} mdOffset={2} md={8}>
@@ -105,10 +110,10 @@ export default class NewSchool extends Component {
               <FormGroup controlId="formHorizontalEmail">
                 <ControlLabel>Nombre del Colegio</ControlLabel>
                 <FormControl type="input" placeholder="Nombre" onChange={e => this.setState({ nombre: e.target.value })} value={nombre} />
-                <ControlLabel>Nombre del Director</ControlLabel>
-                <Select name="form-field-name" placeholder="Seleccione el Director del colegio" options={userDirector} onChange={directorVal => this.setState({ director: directorVal })} value={director} />
+                <ControlLabel>Nombre de los Directores</ControlLabel>
+                <Select multi placeholder="Seleccione los Directores del colegio" options={userDirector} onChange={directoresVal => this.setState({ directores: directoresVal, directorChange: true })} value={directores} />
                 <ControlLabel>Seleccione los Profesores</ControlLabel>
-                <Select multi name="form-field-name" placeholder="Seleccione los profesores del colegio" options={userProfesores} onChange={profesoresVal => this.setState({ profesores: profesoresVal })} value={profesores} />
+                <Select multi placeholder="Seleccione los profesores del colegio" options={userProfesores} onChange={profesoresVal => this.setState({ profesores: profesoresVal, profesorChange: true })} value={profesores} />
               </FormGroup>
               <Button bsStyle="success" disabled={loading} onClick={e => { if (editable) { this.edit(e); } else { this.create(e); } }}>
                 {editable ?

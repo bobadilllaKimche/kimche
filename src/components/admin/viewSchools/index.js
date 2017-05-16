@@ -18,26 +18,22 @@ export default class ViewSchools extends Component {
   componentWillMount() {
     const dataUsers = [];
     const dataSchools = [];
-    const dataSchoolsKeys = [];
-    const dataUserKeys = [];
     firebase.database().ref('users').on('value', users => {
       for (const [key, value] of Object.entries(users.val())) {
-        dataUsers.push(value);
-        dataUserKeys.push(key);
+        dataUsers.push({ value, key });
       }
-      this.setState({ dataUsers, dataUserKeys });
+      this.setState({ dataUsers });
     });
     firebase.database().ref('/schools').on('value', data => {
       for (const [key, value] of Object.entries(data.val())) {
-        dataSchools.push(value);
-        dataSchoolsKeys.push(key);
+        dataSchools.push({ value, key });
       }
-      this.setState({ dataSchools, dataSchoolsKeys });
+      this.setState({ dataSchools });
     });
   }
 
   render() {
-    const { dataUsers, dataSchools, dataSchoolsKeys, dataUserKeys } = this.state;
+    const { dataUsers, dataSchools, dataUserKeys } = this.state;
     if (dataSchools) {
       dataSchools.map(school => {
         if (school.profesores) {
@@ -60,10 +56,10 @@ export default class ViewSchools extends Component {
           <tbody>
             {dataSchools && dataSchools.map((school, i) =>
               <tr key={i}>
-                <td>{school.nombre}</td>
-                <td>{dataUsers[dataUserKeys.indexOf(school.director)].nombre}</td>
-                <td>{school.profesores.map((profesor, j) => <p key={j}>{dataUsers[dataUserKeys.indexOf(profesor)].nombre}</p>)}</td>
-                <td style={{ cursor: 'pointer' }} onClick={() => this.props.history.push(`/admin/editSchool/${dataSchoolsKeys[i]}`)}>Editar <TiEdit size={25} /></td>
+                <td>{school.value.nombre}</td>
+                <td>{school.value.director.map(director => dataUsers.filter(user => user.key === director).map(user => <p>{user.value.nombre}</p>))}</td>
+                <td>{school.value.profesores && school.value.profesores.map((profesor, j) => <p key={j}>{dataUsers.filter(user => user.key === profesor.key)[0].value.nombre}</p>)}</td>
+                <td style={{ cursor: 'pointer' }} onClick={() => this.props.history.push(`/admin/editSchool/${school.key}`)}>Editar <TiEdit size={25} /></td>
               </tr>
           )}
           </tbody>

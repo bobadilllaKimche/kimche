@@ -85,13 +85,13 @@ export default class Main extends Component {
   }
 
   render() {
-    return (
-      <Col xs={12} md={8} mdOffset={2} style={{ paddingTop: '5%', paddingBottom: '5%' }}>
-        <h2>Lista de Anuncios</h2>
-        <hr />
-        {this.renderLista()}
-        <a href="http://recharts.org">Ejemplo de Graficos</a>
-      </Col>
+    return (<div></div>
+      // <Col xs={12} md={8} mdOffset={2} style={{ paddingTop: '5%', paddingBottom: '5%' }}>
+      //   <h2>Lista de Anuncios</h2>
+      //   <hr />
+      //   {this.renderLista()}
+      //   <a href="http://recharts.org">Ejemplo de Graficos</a>
+      // </Col>
     );
   }
 }

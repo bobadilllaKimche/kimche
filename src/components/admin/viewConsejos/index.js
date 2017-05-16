@@ -4,6 +4,8 @@ import { Col, Table } from 'react-bootstrap';
 import firebase from 'firebase';
 import TiEdit from 'react-icons/lib/ti/edit';
 
+// TODO: arreglar estado #next
+
 export default class ViewConsejo extends Component {
 
   constructor(props) {
@@ -20,39 +22,35 @@ export default class ViewConsejo extends Component {
   componentWillMount() {
     const dataUsers = [];
     const dataSchools = [];
-    const dataSchoolsKeys = [];
-    const dataUserKeys = [];
     const dataConsejo = [];
-    const dataConsejoKeys = [];
     firebase.database().ref('consejos').on('value', consejo => {
-      for (const [key, value] of Object.entries(consejo.val())) {
-        dataConsejo.push(value);
-        dataConsejoKeys.push(key);
+      if (consejo.val()) {
+        for (const [key, value] of Object.entries(consejo.val())) {
+          dataConsejo.push({ value, key });
+        }
       }
-      this.setState({ dataConsejo, dataConsejoKeys });
+      this.setState({ dataConsejo });
     });
     firebase.database().ref('users').on('value', users => {
       for (const [key, value] of Object.entries(users.val())) {
-        dataUsers.push(value);
-        dataUserKeys.push(key);
+        dataUsers.push({ value, key });
       }
-      this.setState({ dataUsers, dataUserKeys });
+      this.setState({ dataUsers });
     });
     firebase.database().ref('schools').on('value', data => {
       for (const [key, value] of Object.entries(data.val())) {
-        dataSchools.push(value);
-        dataSchoolsKeys.push(key);
+        dataSchools.push({ value, key });
       }
-      this.setState({ dataSchools, dataSchoolsKeys });
+      this.setState({ dataSchools });
     });
   }
 
   render() {
-    const { dataUsers, dataSchools, dataSchoolsKeys, dataUserKeys, dataConsejo, dataConsejoKeys, states } = this.state;
+    const { dataUsers, dataSchools, dataConsejo, states } = this.state;
     if (dataSchools) {
       dataSchools.map(school => {
         if (school.profesores) {
-          return school.profesores.forEach(profesor => dataUsers[dataUserKeys.indexOf(profesor)].nombre);
+          return school.profesores.forEach(profesor => dataUsers.filter(user => user.key === profesor.key)[0].nombre);
         } else { return null; }
       });
     }
@@ -73,12 +71,12 @@ export default class ViewConsejo extends Component {
           <tbody>
             {dataConsejo && dataConsejo.map((consejo, i) =>
               <tr key={i}>
-                <td>{dataSchools[dataSchoolsKeys.indexOf(consejo.school)].nombre}</td>
-                <td>{consejo.createData}</td>
-                <td>{states[consejo.state]}</td>
-                <td>{consejo.message}</td>
-                <td>{consejo.tipo}</td>
-                <td style={{ cursor: 'pointer' }} onClick={() => this.props.history.push(`/admin/editConsejo/${dataConsejoKeys[i]}`)}>Editar <TiEdit size={25} /></td>
+                <td>{dataSchools.filter(school => school.key === consejo.value.school)[0].value.nombre}</td>
+                <td>{consejo.value.createData}</td>
+                <td>{states[consejo.value.state]}</td>
+                <td>{consejo.value.message}</td>
+                <td>{consejo.value.tipo}</td>
+                <td style={{ cursor: 'pointer' }} onClick={() => this.props.history.push(`/admin/editConsejo/${consejo.key}`)}>Editar <TiEdit size={25} /></td>
               </tr>
           )}
           </tbody>
