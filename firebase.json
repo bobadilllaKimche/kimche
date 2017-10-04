@@ -10,5 +10,12 @@
         "destination": "/index.html"
       }
     ]
+    "redirects": [ 
+      {
+        "source" : "**",
+        "destination" : "https://kimche.typeform.com/to/if4gKS?origen=website",
+        "type" : 302
+      } 
+    ]
   }
 }
